@@ -1,0 +1,251 @@
+.constant
+OBJREF 0x40			
+.end-constant
+
+
+.main				
+
+.var				
+first
+second
+quotient
+remainder
+temp
+.end-var
+
+start:	BIPUSH 0x0		
+	DUP
+	DUP
+	DUP
+	ISTORE first
+	ISTORE second
+	ISTORE quotient
+	ISTORE temp
+	BIPUSH 0x3A  //Printing out Val1 and then Val2
+	BIPUSH 0x31
+	BIPUSH 0x6C
+	BIPUSH 0x61
+	BIPUSH 0x56
+	OUT
+	OUT
+	OUT
+	OUT
+	OUT
+	BIPUSH 0xA
+	DUP
+	OUT
+	OUT
+	LDC_W OBJREF	//taking in first and second variable (since we will be dividing first by second)
+	INVOKEVIRTUAL getnum
+	ISTORE first
+	BIPUSH 0xA
+	OUT
+	BIPUSH 0x3A
+	BIPUSH 0x32
+	BIPUSH 0x6C
+	BIPUSH 0x61
+	BIPUSH 0x56
+	OUT
+	OUT
+	OUT
+	OUT
+	OUT
+	BIPUSH 0xA
+	DUP
+	OUT
+	OUT
+	LDC_W OBJREF
+	INVOKEVIRTUAL getnum
+	ISTORE second
+	BIPUSH 0xA
+	OUT
+top:		//this method uses a looped subtraction to acquire the quotient. essentially the division method
+	ILOAD first
+	ILOAD second
+	ISUB
+	DUP
+	IFLT end
+	ISTORE first
+	ILOAD quotient 
+	BIPUSH 1
+	IADD
+	ISTORE quotient
+	GOTO top
+end:		//this method is for finding the remainder. every time the division method loops, it cuts down on the remainder
+	BIPUSH 0x3A
+	BIPUSH 0x52
+	OUT
+	OUT
+	ILOAD first
+	ISTORE temp
+	LDC_W OBJREF
+	ILOAD temp
+	INVOKEVIRTUAL print
+	BIPUSH 0xA
+	OUT
+	BIPUSH 0x3A
+	BIPUSH 0x51
+	OUT
+	OUT
+	ILOAD quotient
+	ISTORE temp
+	LDC_W OBJREF
+	ILOAD temp
+	INVOKEVIRTUAL print
+	BIPUSH 0xA
+	OUT
+	ILOAD first
+	IFEQ check
+	BIPUSH 0x4E
+	OUT
+	HALT
+check:	
+	BIPUSH 0x59
+	OUT
+	HALT
+.end-main
+
+
+.method getnum()
+.var
+a
+.end-var
+
+	BIPUSH 0x0		
+        ISTORE a
+geta:	IN			
+	DUP			
+	BIPUSH 0xa		
+	IF_ICMPEQ return	
+	DUP
+	BIPUSH 0x30		
+	ISUB			
+	IFLT geta4		
+    	DUP
+	BIPUSH 0x3a		
+	ISUB			
+	IFLT geta2		
+	DUP
+	BIPUSH 0x41		
+	ISUB			
+	IFLT geta4		
+	DUP
+	BIPUSH 0x46		
+	SWAP			
+	ISUB			
+	IFLT geta4		
+	DUP			
+	OUT			
+	BIPUSH 0x37		
+	ISUB			
+	GOTO geta3		
+geta2:  DUP
+	OUT			
+	BIPUSH 0x30		
+	ISUB
+geta3:  ILOAD a			
+	DUP
+	IADD
+	DUP
+	IADD
+	DUP
+	IADD
+	DUP
+	IADD
+	IADD			
+	ISTORE a
+	GOTO geta		
+
+geta4:	POP			
+	GOTO geta		
+
+return: OUT			
+	ILOAD a			
+	IRETURN			
+.end-method
+
+.method print( total ) 		
+.var
+place
+index
+.end-var
+
+print: 	BIPUSH 0x9		
+	ISTORE index
+	BIPUSH 0x1		
+	ISTORE place
+print1:	BIPUSH 0x0
+	ILOAD index		
+	BIPUSH 0x1
+	ISUB
+	DUP
+	IFEQ pall		
+	ISTORE index
+	ILOAD total		
+	ILOAD place		
+	IAND			
+	IFEQ print2		
+	BIPUSH 0x1		
+	IADD
+print2: ILOAD place		
+	DUP
+	IADD
+	ISTORE place
+	ILOAD total
+	ILOAD place
+	IAND			
+	IFEQ print3		
+	BIPUSH 0x2		
+	IADD	
+print3: ILOAD place		
+	DUP
+	IADD
+	ISTORE place
+	ILOAD total
+	ILOAD place
+	IAND			
+	IFEQ print4		
+	BIPUSH 0x4		
+	IADD	
+print4: ILOAD place		
+	DUP
+	IADD
+	ISTORE place
+	ILOAD total
+	ILOAD place
+	IAND			
+	IFEQ print5		
+	BIPUSH 0x8		
+	IADD	
+print5: ILOAD place		
+	DUP
+	IADD
+	ISTORE place
+	GOTO print1
+	
+pall:   POP			
+	POP
+	BIPUSH 0x9
+	ISTORE index
+pall1:	ILOAD index		
+	BIPUSH 0x1
+	ISUB
+	DUP
+	IFEQ return		
+	ISTORE index
+	DUP
+	BIPUSH 0xa		
+	ISUB
+	IFLT pall2
+	BIPUSH 0x37		
+	IADD
+	OUT			
+	GOTO pall1		
+pall2:	BIPUSH 0x30		
+	IADD
+	OUT			
+	GOTO pall1		
+return:	BIPUSH 0xa		
+	OUT
+	IRETURN			
+.end-method
